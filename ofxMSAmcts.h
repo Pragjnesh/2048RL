@@ -1,5 +1,5 @@
 /*
-A very simple C++11 Templated MCTS (Monte Carlo Tree Search) implementation with examples for openFrameworks. 
+A very simple C++11 Templated MCTS (Monte Carlo Tree Search) implementation with examples for openFrameworks.
 
 MCTS Code Based on the Java (Simon Lucas - University of Essex) and Python (Peter Cowling, Ed Powley, Daniel Whitehouse - University of York) impelementations at http://mcts.ai/code/index.html
 */
@@ -32,7 +32,7 @@ namespace msa {
             //--------------------------------------------------------------
             UCT() :
                 iterations(0),
-                uct_k( sqrt(2) ), 
+                uct_k( sqrt(2) ),
                 max_iterations( 100 ),
                 max_millis( 0 ),
                 simulation_depth( 10 )
@@ -96,7 +96,7 @@ namespace msa {
 
 
             //--------------------------------------------------------------
-            Action run(const State& current_state, unsigned int seed = 1, vector<State>* explored_states = nullptr) {
+            Action run(const State& current_state, unsigned int seed = 1, std::vector<State>* explored_states = nullptr) {
                 // initialize timer
                 timer.init();
 
@@ -120,7 +120,7 @@ namespace msa {
 
                     // 2. EXPAND by adding a single child (if not terminal or not fully expanded)
                     if(!node->is_fully_expanded() && !node->is_terminal()) node = node->expand();
-                    
+
                     State state(node->get_state());
 
                     // 3. SIMULATE (if not terminal)

@@ -6,11 +6,10 @@
 #include <string.h>
 #include <time.h>
 #include <algorithm>
-#include <main.h>
-#include <ofxMSAmcts.h>
-#include <State.h>
+#include "ofxMSAmcts.h"
+#include "State.h"
 
-filename = "/Users/Pragjnesh/Documents/2048RL/network.tf";
+// filename = "/Users/Pragjnesh/Documents/2048RL/network.tf";
 static row_t row_left_table[65536];
 static row_t row_right_table[65536];
 static board_t col_up_table[65536];
@@ -133,7 +132,7 @@ static inline board_t transpose(board_t x)
 }
 
 static board_t draw_tile() {
-    return (unif_random(10) < 9) ? 1 : 2;
+    return (std::unif_random(10) < 9) ? 1 : 2;
 }
 
 static board_t insert_tile_rand(board_t board, board_t tile) {

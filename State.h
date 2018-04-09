@@ -1,4 +1,4 @@
-#include<main.h>
+#include"main.h"
 #include<time.h>
 #include<stdlib.h>
 
@@ -37,7 +37,7 @@ public:
     for(move = 0; move < 4; move++) {
         if(execute_move(move, board) != board){
           Action action = move;
-          actions.insert(action);
+          actions.push_back(action);
         }
     }
   }
@@ -45,13 +45,13 @@ public:
   // get a random action, return false if no actions found
   bool get_random_action(Action& action) const{
     std::vector<Action> actions;
-    get_actions(&actions);
+    get_actions(actions);
     if(actions.size()==0){
       return false;
     }
     else{
       srand(time(NULL));
-      action = actions(rand()%actions.size());
+      action = actions[rand()%actions.size()];
     }
     return true;
   }
@@ -60,8 +60,8 @@ public:
   const std::vector<float> evaluate() const{
     std::vector<float> rewards(1);
     if(is_terminal()){
-      int max_tile = max_tile(state);
-      if(max_tile>5){
+      int score = max_tile(board);
+      if(score>5){
         rewards[0] = 1;
         return rewards;
       }
@@ -74,4 +74,4 @@ public:
   std::string to_string() const{
     return std::to_string(board);
   }
-}
+};
