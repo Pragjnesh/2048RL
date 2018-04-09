@@ -7,12 +7,15 @@
 #include <time.h>
 #include <algorithm>
 #include <main.h>
+#include <ofxMSAmcts.h>
+#include <State.h>
 
-filename = "" ;
-static row_t row_left_table [65536];
+filename = "/Users/Pragjnesh/Documents/2048RL/network.tf";
+static row_t row_left_table[65536];
 static row_t row_right_table[65536];
 static board_t col_up_table[65536];
 static board_t col_down_table[65536];
+static int score_table[65536];
 
 void init_tables(){
   for (unsigned row = 0; row < 65536; ++row) {
@@ -22,6 +25,17 @@ void init_tables(){
               (row >>  8) & 0xf,
               (row >> 12) & 0xf
       };
+
+      // Score
+      int score = 0.0f;
+      for (int i = 0; i < 4; ++i) {
+          int rank = line[i];
+          if (rank >= score) {
+              // the score is the maximum tile in the row
+              score = rank;
+          }
+      }
+      score_table[row] = score;
 
       // execute a move to the left
       for (int i = 0; i < 3; ++i) {
@@ -58,23 +72,23 @@ void init_tables(){
   }
 }
 
-void init_network(){
-  if(/*Filename exists*/){
-    //Load the pre-trained network from Filename
-  }
-  else {
-    // Initialize a fresh network
-  }
-}
-
-void save_network(){
-  if(/*Filename exists */){
-    // Save the network under FilenameX
-  }
-  else {
-    // Save the network under Filename1
-  }
-}
+// void init_network(){
+//   if(/*Filename exists*/){
+//     //Load the pre-trained network from Filename
+//   }
+//   else {
+//     // Initialize a fresh network
+//   }
+// }
+//
+// void save_network(){
+//   if(/*Filename exists */){
+//     // Save the network under FilenameX
+//   }
+//   else {
+//     // Save the network under Filename1
+//   }
+// }
 
 static int count_empty(board_t x)
 {
@@ -90,6 +104,15 @@ static int count_empty(board_t x)
     x += x >>  8;
     x += x >>  4; // this can overflow to the next nibble if there were 16 empty positions
     return x & 0xf;
+}
+
+static inline int max_tile(board_t board)
+{
+  int max0 = score_table[((board >>  0) & ROW_MASK)];
+  int max1 = score_table[((board >> 16) & ROW_MASK)];
+  int max2 = score_table[((board >> 32) & ROW_MASK)];
+  int max3 = score_table[((board >> 48) & ROW_MASK)];
+  return std::max(std::max(max0,max1),std::max(max2,max3));
 }
 
 // Transpose rows/columns in a board:
@@ -188,8 +211,19 @@ static inline board_t execute_move(int move, board_t board) {
     }
 }
 
-void get_move(){
+void get_move(board_t board){
+  State state;            // contains the current state, it must comply with the State interface
+  Action action;          // contains an action that can be applied to a State, and bring it to a new State
+  state.board = board;
+  UCT<State, Action> uct; // Templated class. Builds a partial decision tree and searches it with UCT MCTS
 
+  // OPTIONAL init uct params
+  uct.uct_k = sqrt(2);
+  uct.max_millis = 0;
+  uct.max_iterations = 100;
+  uct.simulation_depth = 5;
+
+  action = uct.run(state);
 }
 
 void play_game(){
@@ -231,17 +265,17 @@ void play_game(){
   // Save the game somewhere as a linked-list maybe
 }
 
-void add_game(){
-  // Add the game to a compilation of games
-}
-
-void make_dataset(){
-  // Structure the data so that it can be fed into the graph for training
-}
-
-void train_network(){
-  // Train the network using the dataset created
-}
+// void add_game(){
+//   // Add the game to a compilation of games
+// }
+//
+// void make_dataset(){
+//   // Structure the data so that it can be fed into the graph for training
+// }
+//
+// void train_network(){
+//   // Train the network using the dataset created
+// }
 
 void self_play(int niter, int batch_size){
   for(int i=0;i<niter;i++){

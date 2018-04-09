@@ -2,6 +2,7 @@
 
 typedef uint64_t board_t;
 typedef uint16_t row_t;
+typedef int Action;
 
 static const board_t ROW_MASK = 0xFFFFULL;
 static const board_t COL_MASK = 0x000F000F000F000FULL;
@@ -27,3 +28,6 @@ static inline board_t unpack_col(row_t row) {
 static inline row_t reverse_row(row_t row) {
     return (row >> 12) | ((row >> 4) & 0x00F0)  | ((row << 4) & 0x0F00) | (row << 12);
 }
+
+static inline board_t execute_move(int move, board_t board);
+static inline int max_tile(board_t board);
